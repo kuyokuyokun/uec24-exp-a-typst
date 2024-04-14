@@ -4,6 +4,10 @@
 
 ```typ
 #import "./uec_exp_a.typ": uec_exp_a, title, description
+#import "./logos.typ": Typst, LaTeX
+
+// ロゴの置き換え
+#show "LaTeX": name => LaTeX
 
 // テンプレートを使う
 #show: uec_exp_a
