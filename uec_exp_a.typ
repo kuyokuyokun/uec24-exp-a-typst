@@ -1,8 +1,11 @@
+// 単位の表示に使う
+#import "@preview/metro:0.2.0": *
+
 // フォント名
-#let font_gothic = "Hiragino Kaku Gothic Pro"
-#let font_serif = "YuMincho"
+#let font_gothic = ("Hiragino Kaku Gothic ProN", "Yu Gothic")
+#let font_serif = ("YuMincho", "Yu Mincho")
 
-
+// テンプレート本体
 #let uec_exp_a(content) = {
   // 見出しのフォントはゴシック体
   let font_heading = font_gothic
@@ -58,6 +61,27 @@
   // 一字下げする
   set par(justify: true, first-line-indent: indent_size)
 
+  // 表の設定
+  set table(
+    align: horizon,
+    stroke: (x, y) => {
+      if y == 0 {
+        // 頭のセルのみtopとbottomの枠線を表示する
+        (
+          top: stroke(),
+          bottom: stroke()
+        )
+      } else if y > 1 {
+        // 3つ目以降のセルはtopの枠線の細さを0に上書きする
+        // それによって、最後のセルのみbottomの枠線が表示される
+        (
+          top: 0pt,
+          bottom: stroke()
+        )
+      }
+    },
+  )
+
   // ページ設定
   set page(
     paper: paper_type,
@@ -77,6 +101,12 @@
   set bibliography(
     title: text("参考文献"),
     style: "american-physics-society"
+  )
+
+  // 単位の表示設定
+  metro-setup(
+    per-mode: "symbol", 
+    exponent-mode: "scientific",
   )
 
   // 表示
@@ -107,4 +137,19 @@
 
   // 左寄せに戻す
   set align(left)
+}
+
+// 表の表示
+#let table_figure = (caption: figure.caption, columns: int, ..data) => {
+  figure(
+    table(
+      columns: columns,
+      ..data
+    ), 
+    // キャプションはうにつける
+    caption: figure.caption(
+      position: top, 
+      caption,
+    ),
+  )
 }

@@ -2,8 +2,13 @@
 // ←これで始まる行はコメントなのでPDFでは表示されない
 
 // テンプレートの呼び出し
-#import "./uec_exp_a.typ": uec_exp_a, title, description
+#import "./uec_exp_a.typ": uec_exp_a, title, description, table_figure
 #import "./logos.typ": Typst, LaTeX
+
+// 図表
+#import "@preview/cetz:0.2.2"
+// 単位
+#import "@preview/metro:0.2.0": *
 
 // ロゴの置き換え
 #show "LaTeX": name => LaTeX
@@ -41,6 +46,7 @@ LaTeXと同様に #Typst でもさまざまな表示が可能である。LaTeX�
 
 数式は行中に表示する代わりに複数行に分けて書くこともできる。例えば以下のように記述することで、
 
+#figure()[
 ```typ
 // これは数式の右側に (1) のスタイルで番号をつけるというの意味
 #set math.equation(numbering: "(1)")
@@ -51,6 +57,7 @@ T = 2 pi sqrt(
 ) times (1+ (theta^2) / 16 )
 $
 ```
+]
 
 以下のように表示される。
 
@@ -66,6 +73,41 @@ $
 途中で現れた ```typ sqrt``` は根号 (#underline[sq]uare #underline[r]oo#underline[t] から) を意味する記号だが、これの代わりにユニコードである ```typst √``` を用いることも可能である。```typ √4 = 2``` と記述すると、$√4 = 2$ と表示される。
 
 このように、LaTeXと比較して記法や数式の記述方法も非常に簡単であることがわかると思う。記法の他にもメリットが存在するため、#Typst を使ってみたいと思った人のために紹介しよう。
+
+また、テンプレートに付属している `table_figure` 関数を使うことで簡単に表を描画することができる。
+
+#grid(
+  columns: (1fr, 1fr),
+  figure()[
+  ```typst
+  #table_figure(
+    caption: [
+      振子の長さと周期の関係
+    ],
+    columns: 2,
+    table.header(
+      $h#unit("/cm")$, $T#unit("/s")$,
+    ),
+    $78.0$, $1.5$,
+    $50.0$, $1.2$,
+    $36.0$, $1.1$,
+  ) #label("振子の長さと周期の関係の表")
+  ```
+  ],
+  [#table_figure(
+    caption: [
+      振子の長さと周期の関係
+    ],
+    columns: 2,
+    table.header(
+      $h#unit("/cm")$, $T#unit("/s")$,
+    ),
+    $78.0$, $1.5$,
+    $50.0$, $1.2$,
+    $36.0$, $1.1$,
+  ) #label("振子の長さと周期の関係の表")]
+)
+
 
 
 
