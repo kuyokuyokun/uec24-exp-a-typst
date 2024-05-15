@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# PDF ファイルは追跡しない
+*.pdf
