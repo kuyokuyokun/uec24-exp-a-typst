@@ -74,7 +74,9 @@ $
 
 このように、LaTeXと比較して記法や数式の記述方法も非常に簡単であることがわかると思う。記法の他にもメリットが存在するため、#Typst を使ってみたいと思った人のために紹介しよう。
 
-また、テンプレートに付属している `table_figure` 関数を使うことで簡単に表を描画することができる。
+== 表の描画
+
+テンプレートに付属している `table_figure` 関数を使うことで簡単に表を描画することができる。
 
 #grid(
   columns: (1fr, 1fr),
@@ -108,8 +110,138 @@ $
   ) #label("振子の長さと周期の関係の表")]
 )
 
+== グラフの描画
 
+`cetz` パッケージを使うことで、シンプルなグラフであれば #Typst 単体で描画することができる。少々複雑なコードになってしまうが、自由に描画できるのでプログラミング経験者にはおすすめだ。もちろん、画像ファイルを読み込むのでも全く問題ないだろう。具体的なコードについては、`main.typ` ファイルを参照されたい。
 
+#let 点のデータ = csv("data/dummy_data.csv")
+#let 傾き = 0.0388715
+
+// 重力加速度のグラフ
+#let gravity-graph = (
+  name: str, 
+  x-min: float, 
+  x-max: float, 
+  x-tick-step: float,
+  y-min: float,
+  y-max: float,
+  y-tick-step: float,
+  size-width: float,
+  size-height: float,
+  x-label: content,
+  y-label: content,
+  slope: float, // 傾き
+  caption: content,
+  data
+) => [
+  #figure(
+    cetz.canvas({
+      import cetz.plot
+      import cetz.draw: *
+
+      let draw-point(pos, text, color, anchor) = {
+          circle(pos, radius: 0.1, fill: color, stroke: none)
+          content((), block(inset: 0.3em)[#text], anchor: anchor)
+      }
+
+      // 上と右の目盛りは非表示
+      set-style(
+        top: (
+          tick: (
+            stroke: 0pt,
+          ),
+        ),
+        right: (
+          tick: (
+            stroke: 0pt,
+          ),
+        )
+      )
+      
+      plot.plot(
+        size: (size-width, size-height), 
+        x-min: x-min,
+        x-max: x-max,
+        y-min: y-min,
+        y-max: y-max,
+        x-tick-step: x-tick-step,
+        y-tick-step: y-tick-step,
+        x-label: x-label,
+        y-label: y-label,
+        {
+          // 線のために配列を追加
+          plot.add(
+            (
+              (0, 0), // start point
+              (x-max, x-max * slope) // end point
+            )
+          )
+        }
+      )
+
+      // 点のプロット
+      for ar in data.map(ar => ar.map(v => float(v))) {
+        let x = (ar.at(0) - x-min) / (x-max - x-min) * size-width
+        let y = (ar.at(1) - y-min) / (y-max - y-min) * size-height
+
+        draw-point((x, y), "", blue, "east")
+      }
+
+    }),
+    caption: caption,
+  ) #label(str(name))
+]
+
+#gravity-graph(
+  name: "重力加速度のグラフ",
+  x-min: 20.0,
+  x-max: 80.0,
+  x-tick-step: 10,
+  y-min: 1.0,
+  y-max: 3.5,
+  y-tick-step: 0.5,
+  size-width: 8,
+  size-height: 5,
+  x-label: $h#unit("/cm")$,
+  y-label: $overline(T)^2#unit("/s^2")$,
+  caption: [
+    振子の長さ $h$ と1周期の平均時間の二乗 $overline(T)^2$ の関係
+  ],
+  slope: 傾き,
+  点のデータ
+)
+
+ちなみに、 #Typst では CSV からデータを読み込んで加工、表示することが可能であるため、Excel等から出力したデータをそのまま使うこともできる。@重力加速度のグラフ の例では、CSV を読み込んで使用している。
+
+#figure(
+  [
+```typst
+#let 点のデータ = csv("data/dummy_data.csv")
+#let 傾き = 0.0388715
+
+// 途中略
+
+#gravity-graph(
+  name: "重力加速度のグラフ",
+  x-min: 20.0,
+  x-max: 80.0,
+  x-tick-step: 10,
+  y-min: 1.0,
+  y-max: 3.5,
+  y-tick-step: 0.5,
+  size-width: 8,
+  size-height: 5,
+  x-label: $h#unit("/cm")$,
+  y-label: $overline(T)^2#unit("/s^2")$,
+  caption: [
+    振子の長さ $h$ と1周期の平均時間の二乗 $overline(T)^2$ の関係
+  ],
+  slope: 傾き,
+  点のデータ
+)
+```
+  ]
+)
 
 = Typst のインストール
 == macOS
