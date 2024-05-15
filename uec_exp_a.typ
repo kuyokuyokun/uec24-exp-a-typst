@@ -119,7 +119,7 @@
 #let title(font_size: 12pt, content) = {
   // 中央寄せする
   set align(center)
-  set text(size: font_size, font: font_gothic, weight: "regular")
+  set text(size: font_size, font: font_gothic, weight: "bold")
 
   content
 
