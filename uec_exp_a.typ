@@ -1,9 +1,13 @@
 // 単位の表示に使う
 #import "@preview/metro:0.2.0": *
 
+// 自然なパターンの表示に使う
+#import "@preview/modpattern:0.1.0": modpattern
+
+
 // フォント名
-#let font_gothic = ("Hiragino Kaku Gothic ProN", "Yu Gothic")
-#let font_serif = ("YuMincho", "Yu Mincho")
+#let font_gothic = ("Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans CJK JP")
+#let font_serif = ("YuMincho", "Yu Mincho", "Noto Serif CJK JP")
 
 // テンプレート本体
 #let uec_exp_a(content) = {
@@ -153,3 +157,14 @@
     ),
   )
 }
+
+// 斜めの線のパターン
+/// 右上に斜めの線を引くパターン
+#let north_east_pattern = (gap: (5pt, 5pt)) => modpattern(gap)[
+  #place(line(start: (0%, 100%), end: (100%, 0%)))
+]
+
+/// 右下に斜めの線を引くパターン
+#let south_east_pattern = (gap: (5pt, 5pt)) => modpattern(gap)[
+  #place(line(start: (0%, 0%), end: (100%, 100%)))
+]
